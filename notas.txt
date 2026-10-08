@@ -1,0 +1,46 @@
+Cubo ?? en la lista de canciones -- OK
+Piezas redondas base sobresalen por abajo
+Discos les falta resolución
+Marco interior poca resolución?
+Falta cristal
+
+------------
+
+NOTA IMPORTANTE: Al crear el esqueleto en el Skeletal Mesh menu el Skeleton menu ha de estar cerrado.
+
+Crear controles
+Seleccionando todos los huesos Click der - New Element - New Control
+Izquierda azul y derecha roja, controles centro verde
+En Details - Shape Properties se puede cambiar el color y forma del control, el Shape Transform cambia el tamaño
+No usamos nunca el Current Transform (excepto en casos como los Pole Vector)
+Hacemos un main_ctrl como padre del root, y a la misma altura uno en forma de flecha para saber la orientación del personaje
+
+Como conectar los controles a los huesos
+Se hace en el Forward Solve Graph.
+Al arrastrar del Rig Hierarchy al Forward Solve Graph
+-Un control crea un Get Transform - Control
+-Un hueso crea un Set Transform - Bone
+Usamos estos dos nodos para conectar los huesos a los controles.
+
+Unir el (forward solve) Execute --- Execute (set transform bone) y unir el (Set transform Bone) Value --- Transform (Get transform Control), colocando en el Bone y Control ¨Item¨ los correspondientes (ej, head y head_ctrl)
+Se puede ir repitiendo esto para cada hueso, o usar esta misma secuencia para crear una función:
+1. Tab My Blueprint - Functions +
+2. Llamarlo SetBoneToCtrl
+3. Dentro de la función, conectar el Entry y Return al Set Transform Bone
+4. Arrastrar la salida de ¨Item¨ de ambos nodos a la parte baja del Entry, esto crea un input para cada uno, renombrarlos como Ctrl y Bone
+
+**Seleccionando varios nodos click der y ¨collapse¨ los deja como un solo nodo
+
+Crear IK
+Crear en el Forward Solve Graph nodo Basic IK
+Crear un control para el IK y otro para el Pole Vector (esto indica a donde apunta el hueso de en medio, por ej rodilla)
+Conectar el (control IK) Transform -- Effector (basic IK) y (control pole vector) Translation --- Pole Vector
+Para que el Pole Vector no resetee posición cuando se compile, darle click der cuando este en la posición deseada -- Zero Offset
+Para que el IK no ¨salte¨ al conectarlo y desconectarlo hay que cambiar en (basic IK) Primary Axis y Secondary Axis con -1, 0 y 1 hasta que los ejes estén como el hueso sin IK
+A la hora de hacer una extremidad que ha sido hecha por mirror hay también que ajustar los ejes mediante esta opción para que el IK funcione, serán los valores negativos a la extremidad contraria (ej izq X1 y Z-1, der X-1 y Z1)
+
+Nodos para el control rig
+
+-Construction event: para adaptar el rig a otro modelo con el mismo nombre de control rig, coge cada hueso y aplica los controles según los nombres
+-Forwards Solve: donde se crean las conexiones entre huesos y controles, lo que permite que el control rig funcione para animar
+-Backwards Solve: crea las acciones para poder bakear animaciones/poses ya hechas
