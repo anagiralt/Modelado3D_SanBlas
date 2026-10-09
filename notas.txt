@@ -1,10 +1,5 @@
-Cubo ?? en la lista de canciones -- OK
-Piezas redondas base sobresalen por abajo
-Discos les falta resolución
-Marco interior poca resolución?
-Falta cristal
 
-------------
+RIGGING
 
 NOTA IMPORTANTE: Al crear el esqueleto en el Skeletal Mesh menu el Skeleton menu ha de estar cerrado.
 
@@ -32,15 +27,77 @@ Se puede ir repitiendo esto para cada hueso, o usar esta misma secuencia para cr
 **Seleccionando varios nodos click der y ¨collapse¨ los deja como un solo nodo
 
 Crear IK
-Crear en el Forward Solve Graph nodo Basic IK
-Crear un control para el IK y otro para el Pole Vector (esto indica a donde apunta el hueso de en medio, por ej rodilla)
-Conectar el (control IK) Transform -- Effector (basic IK) y (control pole vector) Translation --- Pole Vector
-Para que el Pole Vector no resetee posición cuando se compile, darle click der cuando este en la posición deseada -- Zero Offset
-Para que el IK no ¨salte¨ al conectarlo y desconectarlo hay que cambiar en (basic IK) Primary Axis y Secondary Axis con -1, 0 y 1 hasta que los ejes estén como el hueso sin IK
-A la hora de hacer una extremidad que ha sido hecha por mirror hay también que ajustar los ejes mediante esta opción para que el IK funcione, serán los valores negativos a la extremidad contraria (ej izq X1 y Z-1, der X-1 y Z1)
+1.Crear en el Forward Solve Graph nodo Basic IK
+2.Crear un control para el IK y otro para el Pole Vector (esto indica a donde apunta el hueso de en medio, por ej rodilla)
+3.Conectar el (control IK) Transform -- Effector (basic IK) y (control pole vector) Translation --- Pole Vector
+4.Para que el Pole Vector no resetee posición cuando se compile, darle click der cuando este en la posición deseada -- Zero Offset
+5.Para que el IK no ¨salte¨ al conectarlo y desconectarlo hay que cambiar en (basic IK) Primary Axis y Secondary Axis con -1, 0 y 1 hasta que los ejes estén como el hueso sin IK
+**A la hora de hacer una extremidad que ha sido hecha por mirror hay también que ajustar los ejes mediante esta opción para que el IK funcione, serán los valores negativos a la extremidad contraria (ej izq X1 y Z-1, der X-1 y Z1)
+6.Se puede hacer una función para hacer el segundo, dejando como parámetros los huesos, primary y secondary axis, item del control ik y del control pole vector.
+
+Crear control para cambiar de IK a FK
+1.Comenzamos el execute seguido de los controles generales que no son las piernas
+2.Creamos un Branch, el true ira a los controles IK y el false a FK
+3.Seleccionamos el control del rig en el que queramos que este la opción para cambiar IK FK, nos vamos a Animation Channels damos al + y cambiamos de channel a bool (booleana true/false)
+4.Sacamos la bool al graph y conectamos su Value al Condition del Branch
+
+Que los controles FK sigan al IK cuando este se mueva
+1. En el árbol, hay que duplicar y añadir los controles FK después del IK, pero añadiendo una condición dentro de la función de todos los IK. Explicado a continuación.
+2. Dentro de la función del hueso/control. Crear en el Entry una bool llamada ¨invert¨. Crear un Branch y que esta bool sea la Condition, el False será lo que ya teníamos y el Completed el Return.
+3. Para el True del Branch, duplicar lo mismo que en el False pero invertir los inputs de manera que el que controla sea el hueso en vez del control.
+
+Ocultar los controles del IK cuando el Fk esta activo y viceversa
+Se usa el Set Control Visibility y el For Each
+En el For Each se coloca después de la cadena de huesos, se indica en el Array cada control que queremos que se vea, Execute y el de justo debajo se conecta al Set control visibility y se marca como visible. Luego el Completed de For Each va al Execute the un nuevo For Each, se repite lo mismo pero para los controles no visibles.
+
 
 Nodos para el control rig
 
 -Construction event: para adaptar el rig a otro modelo con el mismo nombre de control rig, coge cada hueso y aplica los controles según los nombres
 -Forwards Solve: donde se crean las conexiones entre huesos y controles, lo que permite que el control rig funcione para animar
 -Backwards Solve: crea las acciones para poder bakear animaciones/poses ya hechas
+
+
+DECALS
+
+Master material para crear un decal:
+-Material Domain en Deferred Decal.
+-Blend Mode en Translucent.
+Además de las usuales, debe tener textura de Opacity, la textura debe de estar como Linear Grayscale. Usar la función MatPack para añadirle el resto de parámetros.
+Una vez hecho sólo se tiene que arrastrar a la escena.
+
+Para crear un decal que funcione como una luz.
+Primero en el master material de lo que se ilumina, se deconectan todos las conexiones, se le añade un GetMaterialAttributes para sacar el BaseColor. Este va a un Multiply, y el B desde el RGB de un DBuffer (BaseColor)
+Luego el Decal: hacer un material (Deferred Decal y Translucent) y conectarle al Base Color un Decal Color.
+
+Por que funciona esto:
+Unreal tiene una parte de su memoria que está reservada para decals, igual que para otras capas (como las visualizaciones de Substance) esto se puede sacar mediante el nodo DBuffer.
+Al multiplicar el base color del master material con el DBuffer y aplicado al emisivo esto parece luz.
+
+
+VFX
+
+Niagara system: Sistema de partículas de Unreal más reciente. Se componen de emiters, los cuales definen como funcionan.
+JangaFX: se puede descargar IlluGen, EmberGen, LiquiGen para Unreal. Son sistemas rápidos y ligeros.
+
+Click der Content Drawer - Niagara System
+Hay que tener un sistema para que reproduzca/gestiones el emisor, el emisor es el que gestiona partículas, puede haber más de un emisor por sistema.
+
+Emitter
+Emitter update: donde se especifica cuantas partículas se generan y durante cuanto
+Particle update: tamaño, peso, posición, rotación, forma y color de las partículas
+Hay distintos tiempos dentro de un efecto que se pueden usar, tiempo general, tiempo del emisor, tiempo de la partícular… 
+
+Modulos:
+-Scale Sprite Size: que cuando nazca la partícula se haga mas grande
+-Spawn Burst Instantaneous
+-Gravity forcé: añade gravedad, en cualquier dirección y con la fuerza puesta
+-Offset position
+-Drag: intenta mantener las partículas siempre en el punto medio
+-Light attributes
+
+Para que una partícula utilice las opciones de color del emitter debe de tener un nodo ¨particle color¨ dentro.
+
+
+
+EL RINCON DEL SOFTWARE
