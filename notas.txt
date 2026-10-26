@@ -99,5 +99,32 @@ Modulos:
 Para que una partícula utilice las opciones de color del emitter debe de tener un nodo ¨particle color¨ dentro.
 
 
+ENTREGA EXAMEN
+
+-Pureref con referencias para el shot y para los assets
+-No va a evaluar lo artístico sino lo técnico, cantidad de herramientas usadas no el resultado artístico final
+-Txt con el Git del proyecto (?)
+X-IMPORTANTE Nivel que se llame [Nombre_Apellido]_Diorama
+-IMPORTANTE En la entrega solo van el config/ content/ .gitignore y .uproject, por cada archivo/carpeta de mas 1 punto menos
+-IMPORTANTE Que pese menos de 2GB
+-No importa tanto el orden interno de las carpetas o nomenclaturas, pero si agrupar un poco sobre todo si algo tienen muchos elementos. Deewa prefiere por objetos. Ordenar también lo que sea que venga de Fab.
+-Log de unos cuantos commits
+-Metahuman jugable
+-Landscape con 2 o más materiales pintados con diferentes alturas (puede ser mínimo)
+-Suma que los master materials tengan debug textures
+-No vale usar los materiales de lo que cojamos de fab 
+-Foliage (jarrones? tazas?)
+
+Cosas que suman pero no son obligatorias
+-Materiales complejos
+-Texturas de debug en los master material
+-Personaje, rig o animaciones propias
+-Decals y dbuffer decals
+-Texturas empaquetadas (ORM NRO etc)
+-FX con Niagara/Cascade
+
+Formato de normales
+OpenGL
+DirectX: Unreal
 
 EL RINCON DEL SOFTWARE
